@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	db "github.com/helltale/EffectiveMobile2024/test-api/db"
-	"github.com/helltale/EffectiveMobile2024/test-api/models"
+	db "github.com/helltale/EffectiveMobile2024/test-api/internal/db"
+	"github.com/helltale/EffectiveMobile2024/test-api/internal/models"
 )
 
 // @Summary Get songs

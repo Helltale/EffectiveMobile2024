@@ -2,22 +2,24 @@ version: '3.8'
 
 services:
   app:
-    build: .
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     ports:
-      - "8080:8080"
+      - "${APP_PORT:-8080}:8080" 
     environment:
-      - DATABASE_URL=host=db user=user dbname=musicdb password=password sslmode=disable
+      - DATABASE_URL=${DATABASE_URL} 
     depends_on:
       - db
 
   db:
     image: postgres:latest
     environment:
-      POSTGRES_DB: musicdb
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${POSTGRES_DB:-musicdb}
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

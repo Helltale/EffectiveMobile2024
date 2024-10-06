@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/helltale/EffectiveMobile2024/test-api/models"
+	"github.com/helltale/EffectiveMobile2024/test-api/internal/models"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"

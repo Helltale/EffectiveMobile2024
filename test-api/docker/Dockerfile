@@ -1,19 +1,32 @@
+# Используем официальный образ Go для сборки приложения
 FROM golang:1.20 AS builder
 
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
-COPY go.mod go.sum ./
+# Копируем go.mod и go.sum из родительской директории
+COPY ../go.mod ../go.sum ./
 
+# Загружаем зависимости
 RUN go mod download
 
-COPY . .
+# Копируем исходный код приложения
+COPY ../ . 
 
-RUN go build -o main .
+# Собираем исполняемый файл
+RUN go build -o main main.go
 
+# Используем минимальный образ для запуска приложения
 FROM alpine:latest
 
+# Устанавливаем необходимые зависимости (например, для работы с TLS)
 RUN apk --no-cache add ca-certificates
 
+# Копируем исполняемый файл из этапа сборки
 COPY --from=builder /app/main .
 
+# Устанавливаем рабочую директорию
+WORKDIR /
+
+# Указываем команду для запуска приложения
 CMD ["./main"]

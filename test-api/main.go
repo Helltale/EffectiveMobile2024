@@ -4,8 +4,8 @@ import (
 	_ "github.com/helltale/EffectiveMobile2024/test-api/swagger/docs"
 
 	"github.com/gin-gonic/gin"
-	db "github.com/helltale/EffectiveMobile2024/test-api/db"
-	"github.com/helltale/EffectiveMobile2024/test-api/routes"
+	db "github.com/helltale/EffectiveMobile2024/test-api/internal/db"
+	"github.com/helltale/EffectiveMobile2024/test-api/internal/routes"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
