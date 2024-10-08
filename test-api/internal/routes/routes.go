@@ -1,3 +1,4 @@
+// internal/routes/routes.go
 package routes
 
 import (
@@ -6,7 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	db "github.com/helltale/EffectiveMobile2024/test-api/internal/db"
+	"github.com/helltale/EffectiveMobile2024/test-api/internal/logger"
 	"github.com/helltale/EffectiveMobile2024/test-api/internal/models"
+	"github.com/sirupsen/logrus"
 )
 
 // @Summary Get songs
@@ -29,15 +32,16 @@ func GetSongs(c *gin.Context) {
 		limit = "10"
 	}
 
-	// Преобразуем параметры в целые числа
 	pageInt, err := strconv.Atoi(page)
 	if err != nil || pageInt < 1 {
+		logger.Log.Warn("Invalid page number")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
 		return
 	}
 
 	limitInt, err := strconv.Atoi(limit)
 	if err != nil || limitInt < 1 {
+		logger.Log.Warn("Invalid limit number")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit number"})
 		return
 	}
@@ -45,6 +49,7 @@ func GetSongs(c *gin.Context) {
 	offset := (pageInt - 1) * limitInt
 
 	db.DB.Offset(offset).Limit(limitInt).Find(&songs)
+	logger.Log.Infof("Retrieved %d songs", len(songs))
 	c.JSON(http.StatusOK, songs)
 }
 
@@ -59,11 +64,17 @@ func GetSongs(c *gin.Context) {
 func AddSong(c *gin.Context) {
 	var song models.Song
 	if err := c.ShouldBindJSON(&song); err != nil {
+		logger.Log.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("Failed to bind JSON")
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
 	db.DB.Create(&song)
+	logger.Log.WithFields(logrus.Fields{
+		"song": song,
+	}).Info("Added new song")
 	c.JSON(http.StatusCreated, song)
 }
 
@@ -77,9 +88,15 @@ func DeleteSong(c *gin.Context) {
 	id := c.Param("id")
 	var song models.Song
 	if err := db.DB.Where("id = ?", id).Delete(&song).Error; err != nil {
+		logger.Log.WithFields(logrus.Fields{
+			"id": id,
+		}).Error("Song not found")
 		c.JSON(http.StatusNotFound, gin.H{"message": "Song not found"})
 		return
 	}
+	logger.Log.WithFields(logrus.Fields{
+		"id": id,
+	}).Info("Deleted song")
 	c.Status(http.StatusNoContent)
 }
 
@@ -97,16 +114,25 @@ func UpdateSong(c *gin.Context) {
 	var song models.Song
 
 	if err := db.DB.First(&song, id).Error; err != nil {
+		logger.Log.WithFields(logrus.Fields{
+			"id": id,
+		}).Error("Song not found")
 		c.JSON(http.StatusNotFound, gin.H{"message": "Song not found"})
 		return
 	}
 
 	if err := c.ShouldBindJSON(&song); err != nil {
+		logger.Log.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("Failed to bind JSON")
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
 	db.DB.Save(&song)
+	logger.Log.WithFields(logrus.Fields{
+		"song": song,
+	}).Info("Updated song")
 	c.JSON(http.StatusOK, song)
 }
 
@@ -116,10 +142,17 @@ func GetSongByID(c *gin.Context) {
 	var song models.Song
 
 	if err := db.DB.First(&song, id).Error; err != nil {
+		logger.Log.WithFields(logrus.Fields{
+			"id": id,
+		}).Error("Song not found")
 		c.JSON(http.StatusNotFound, gin.H{"message": "Song not found"})
 		return
 	}
 
+	logger.Log.WithFields(logrus.Fields{
+		"id":   id,
+		"song": song,
+	}).Info("Retrieved song by ID")
 	c.JSON(http.StatusOK, song)
 }
 

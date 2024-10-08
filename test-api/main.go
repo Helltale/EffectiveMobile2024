@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	db "github.com/helltale/EffectiveMobile2024/test-api/internal/db"
+	"github.com/helltale/EffectiveMobile2024/test-api/internal/logger"
 	"github.com/helltale/EffectiveMobile2024/test-api/internal/routes"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -16,6 +17,8 @@ import (
 // @host localhost:8080
 // @BasePath /
 func main() {
+	logger.Init()
+
 	db.Connect()
 
 	router := gin.Default()
@@ -24,5 +27,6 @@ func main() {
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
+	logger.Log.Info("star server on port 8080")
 	router.Run(":8080")
 }
