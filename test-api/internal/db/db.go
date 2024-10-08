@@ -16,13 +16,20 @@ var DB *gorm.DB
 func Connect() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal("err: can not get .env")
 	}
 
-	dsn := os.Getenv("DATABASE_URL")
-	DB, err = gorm.Open("postgres", dsn)
+	dbName := os.Getenv("POSTGRES_DB")
+	dbUser := os.Getenv("POSTGRES_USER")
+	dbPassword := os.Getenv("POSTGRES_PASSWORD")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+
+	link := "host=" + dbHost + " port=" + dbPort + " user=" + dbUser + " dbname=" + dbName + " password=" + dbPassword + " sslmode=disable"
+
+	DB, err = gorm.Open("postgres", link)
 	if err != nil {
-		log.Fatal("Failed to connect to database")
+		log.Fatal("err: can not connect with db")
 	}
 
 	DB.AutoMigrate(&models.Song{})

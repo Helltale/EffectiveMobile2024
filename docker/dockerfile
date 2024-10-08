@@ -1,0 +1,10 @@
+FROM postgres:latest
+
+# Копируем скрипт для создания таблиц
+COPY script.sql /docker-entrypoint-initdb.d/
+
+# Устанавливаем права на скрипт (это не обязательно, но можно оставить)
+RUN chmod +x /docker-entrypoint-initdb.d/script.sql
+
+# В лог выводим содержимое скрипта (это также не обязательно, но может помочь для отладки)
+RUN cat /docker-entrypoint-initdb.d/script.sql

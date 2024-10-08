@@ -63,9 +63,6 @@ func AddSong(c *gin.Context) {
 		return
 	}
 
-	// Call external API here to enrich song data
-	// ...
-
 	db.DB.Create(&song)
 	c.JSON(http.StatusCreated, song)
 }
